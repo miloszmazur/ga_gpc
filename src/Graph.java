@@ -4,15 +4,17 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Graph {
+@SuppressWarnings("rawtypes")
+public class Graph implements Comparable {
 	private Vertex v;
 	public Vertex[] vertices;
 	private Scanner in;
 	private Random r;
+	public int cost;
 
-	public Graph(Vertex[] vertices) {
+	public Graph(Vertex[] vertices, int cost) {
 		this.vertices = vertices;
-
+		this.cost = cost;
 	}
 
 	public Graph(String file) throws FileNotFoundException {
@@ -28,7 +30,7 @@ public class Graph {
 		in.next();
 		int a = in.nextInt();
 		in.next();
-		vertices = new Vertex[a+1];
+		vertices = new Vertex[a + 1];
 
 		while (in.hasNext()) {
 			in.next();
@@ -42,12 +44,13 @@ public class Graph {
 			}
 		}
 
-		return new Graph(vertices);
+		return new Graph(vertices, -1);
 	}
 
 	public String toString() {
 
-		return new String("Vertices: " + getVertices() + "\nEdges: " + getEdges());
+		return new String("Vertices: " + getVertices() + ", Edges: "
+				+ getEdges() + ", conflicts: " + cost);
 	}
 
 	public int getEdges() {
@@ -59,18 +62,16 @@ public class Graph {
 	}
 
 	public int getVertices() {
-		return vertices.length -1;
+		return vertices.length - 1;
 	}
-	
-	public void colorize(int tops)
-	{
-		for (int i = 1; i < vertices.length; i++) 
-		{
+
+	public void colorize(int tops) {
+		for (int i = 1; i < vertices.length; i++) {
 			r = new Random();
 			vertices[i].color = r.nextInt(tops);
 		}
 	}
-	
+
 	public int eval() {
 		int conflicts = 0;
 		for (int i = 1; i < vertices.length; i++) {
@@ -80,8 +81,20 @@ public class Graph {
 			}
 
 		}
-		System.out.println(conflicts);
 		return conflicts;
+	}
+
+	public int compareTo(Object other) {
+		// final int BEFORE = -1;
+		// final int EQUAL = 0;
+		// final int AFTER = 1;
+		//
+		if (cost < ((Graph) other).cost)
+			return -1;
+		else if (cost > ((Graph) other).cost)
+			return 1;
+		else
+			return 0;
 	}
 
 }
